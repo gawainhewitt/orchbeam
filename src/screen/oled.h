@@ -23,5 +23,4 @@ extern int storedMax;
 
 void resetDisplay();
 void setupOLED();
-void drawOLED(std::string scale, std::string key, int divisions, int min, int max, bool showSoIPrompt);
-void drawTrackAndLevel(bool showError, const char* trackName, const char* levelName, const char* availableLevels, int minDist, int maxDist);
+void drawOLED(std::string scale, std::string key, int divisions, int min, int max);

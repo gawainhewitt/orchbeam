@@ -34,31 +34,6 @@ void loadLatinPercussion();
 void loadAfricanPercussion();
 void loadBasicDrumKit();
 
-void loadSoundmaker01();
-void loadSoundmaker02();
-void loadSoundmaker03();
-void loadSoundmaker04();
-void loadSoundmaker05();
-void loadSoundmaker06();
-void loadSoundmaker07();
-void loadSoundmaker08();
-void loadSoundmaker09();
-void loadSoundmaker10();
-
-void loadPatternmaker03();
-void loadPatternmaker04();
-void loadPatternmaker05();
-void loadPatternmaker06();
-void loadPatternmaker08();
-void loadPatternmaker09();
-void loadPatternmaker10();
-
-void loadMotifmaker06();
-void loadMotifmaker07();
-void loadMotifmaker08();
-void loadMotifmaker09();
-void loadMotifmaker10();
-
 void unloadCurrentInstrument();
 
 void loadInstrumentForType(int typePosition);

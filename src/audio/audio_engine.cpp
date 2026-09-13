@@ -4,7 +4,6 @@
 #include "../storage/sample_loader.h"
 #include "../storage/instrument_manager.h"
 #include "i2s_manager.h"
-#include "mp3_streamer.h"
 
 Voice voices[MAX_POLYPHONY];
 TaskHandle_t audioTask;
@@ -166,27 +165,6 @@ void audioTaskCode(void* parameter) {
                 if (voices[v].isActive) {
                     processVoice(voices[v], leftMix, rightMix);
                 }
-            }
-            
-            // Mix MP3 backing track
-            int16_t mp3Left = 0, mp3Right = 0;
-            static unsigned long lastMp3Debug = 0;
-            static int mp3SampleCount = 0;
-
-            bool gotMP3Sample = readMP3Samples(&mp3Left, &mp3Right);
-            if (gotMP3Sample) {
-                leftMix += mp3Left;
-                rightMix += mp3Right;
-                mp3SampleCount++;
-            }
-
-            // Debug output once per second
-            if (millis() - lastMp3Debug > 1000) {
-                if (mp3SampleCount > 0) {
-                    DEBUGF("MP3 samples read in last second: %d\n", mp3SampleCount);
-                }
-                mp3SampleCount = 0;
-                lastMp3Debug = millis();
             }
             
             // Prevent clipping with soft limiting

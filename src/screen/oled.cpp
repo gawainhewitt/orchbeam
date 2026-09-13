@@ -4,7 +4,6 @@
 #include "../storage/instrument_manager.h"
 #include "../midi/midi.h"
 #include "../switches/switches.h"
-#include "../audio/mp3_streamer.h"
 #include "../debug.h"
 
 // Define the u8g2 object (note: _F_ means full buffer mode)
@@ -62,13 +61,12 @@ void setupOLED() {
     DEBUG("Display initialized");
 }
 
-void drawOLED(std::string scale, std::string key, int divisions, int min, int max, bool showSoIPrompt) {
+void drawOLED(std::string scale, std::string key, int divisions, int min, int max) {
     static bool initialized = false;
     static std::string prevScale = "", prevKey = "";
     static int prevDivisions = -1, prevMin = -1, prevMax = -1;
     static int prevOctave = -1;
     static int prevInstrumentType = -1;
-    static bool prevShowPrompt = false;
     static bool prevLoading = false;
 
     // Only redraw if something changed (including octave, the instrument type,
@@ -79,7 +77,7 @@ void drawOLED(std::string scale, std::string key, int divisions, int min, int ma
     if (scale == prevScale && key == prevKey && divisions == prevDivisions &&
         min == prevMin && max == prevMax && currentOctaveNumber == prevOctave &&
         getSelectedInstrumentType() == prevInstrumentType &&
-        showSoIPrompt == prevShowPrompt && loading == prevLoading && initialized) {
+        loading == prevLoading && initialized) {
         return;
     }
 
@@ -90,7 +88,6 @@ void drawOLED(std::string scale, std::string key, int divisions, int min, int ma
     prevMax = max;
     prevOctave = currentOctaveNumber;
     prevInstrumentType = getSelectedInstrumentType();
-    prevShowPrompt = showSoIPrompt;
     prevLoading = loading;
     initialized = true;
 
@@ -100,16 +97,6 @@ void drawOLED(std::string scale, std::string key, int divisions, int min, int ma
         u8g2.setFont(u8g2_font_6x10_tr);
         u8g2.drawStr(0, 30, "Loading");
         u8g2.drawStr(0, 45, "instrument...");
-        u8g2.sendBuffer();
-        return;
-    }
-
-    // Sounds of Intent prompt screen
-    if (showSoIPrompt) {
-        u8g2.setFont(u8g2_font_6x10_tr);
-        u8g2.drawStr(0, 20, "Please choose a");
-        u8g2.drawStr(0, 35, "Sounds of Intent");
-        u8g2.drawStr(0, 50, "level");
         u8g2.sendBuffer();
         return;
     }
@@ -170,114 +157,6 @@ void drawOLED(std::string scale, std::string key, int divisions, int min, int ma
     u8g2.drawStr(60, y, "Max: ");
     std::string maxStr = std::to_string(max);
     u8g2.drawStr(90, y, maxStr.c_str());
-
-    u8g2.sendBuffer();
-}
-
-void drawTrackAndLevel(bool showError, const char* trackName, const char* levelName, const char* availableLevels, int minDist, int maxDist) {
-    static bool initialized = false;
-    static bool prevShowError = false;
-    static String prevTrackName = "";
-    static String prevLevelName = "";
-    static String prevAvailableLevels = "";
-    static int prevMinDist = -1;
-    static int prevMaxDist = -1;
-    static bool prevLooping = false;
-
-    // Force redraw for loading messages
-    bool isLoadingMessage = (String(availableLevels) == "Loading...");
-    if (isLoadingMessage) {
-        initialized = false;
-    }
-
-    // Only redraw if something changed (including the loop state, so the LOOP
-    // indicator appears/clears reliably).
-    if (!isLoadingMessage && initialized &&
-        showError == prevShowError &&
-        String(trackName) == prevTrackName &&
-        String(levelName) == prevLevelName &&
-        String(availableLevels) == prevAvailableLevels &&
-        minDist == prevMinDist &&
-        maxDist == prevMaxDist &&
-        mp3Looping == prevLooping) {
-        return;
-    }
-
-    prevShowError = showError;
-    prevTrackName = trackName;
-    prevLevelName = levelName;
-    prevAvailableLevels = availableLevels;
-    prevMinDist = minDist;
-    prevMaxDist = maxDist;
-    prevLooping = mp3Looping;
-    initialized = true;
-
-    u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_6x10_tr);
-
-    int y = 10;
-    int lineHeight = 10;
-
-    // Show track name
-    u8g2.drawStr(0, y, trackName);
-    y += lineHeight;
-
-    if (showError) {
-        u8g2.drawStr(0, y, "Not available for");
-        y += lineHeight;
-        u8g2.drawStr(0, y, levelName);
-        y += lineHeight;
-
-        // Show available levels
-        String levelsStr = String(availableLevels);
-        int startPos = 0;
-        int commaPos = levelsStr.indexOf(',', startPos);
-        bool firstLine = true;
-
-        while (commaPos != -1 || startPos < levelsStr.length()) {
-            String line;
-            if (commaPos != -1) {
-                line = levelsStr.substring(startPos, commaPos);
-                startPos = commaPos + 2;
-            } else {
-                line = levelsStr.substring(startPos);
-                startPos = levelsStr.length();
-            }
-            line.trim();
-
-            if (firstLine) {
-                line = "Try: " + line;
-                firstLine = false;
-            }
-
-            u8g2.drawStr(0, y, line.c_str());
-            y += lineHeight;
-            commaPos = levelsStr.indexOf(',', startPos);
-        }
-    } else {
-        u8g2.drawStr(0, y, levelName);
-        y += lineHeight;
-
-        if (strlen(availableLevels) > 0) {
-            u8g2.drawStr(0, y, availableLevels);
-            y += lineHeight;
-        }
-
-        // Show Min/Max at fixed columns (mirrors drawOLED) so Max doesn't
-        // shift when Min's width changes (proportional font).
-        u8g2.drawStr(0, y, "Min: ");
-        char minStr[8];
-        snprintf(minStr, sizeof(minStr), "%d", minDist / 10);
-        u8g2.drawStr(30, y, minStr);
-        u8g2.drawStr(60, y, "Max: ");
-        char maxStr[8];
-        snprintf(maxStr, sizeof(maxStr), "%d", maxDist / 10);
-        u8g2.drawStr(90, y, maxStr);
-    }
-
-    // Loop state on its own line below Min/Max
-    y += lineHeight;
-    u8g2.drawStr(0, y, mp3Looping ? "Loop: on" : "Loop: off");
 
     u8g2.sendBuffer();
 }
