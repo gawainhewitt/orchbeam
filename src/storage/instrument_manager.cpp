@@ -10,6 +10,15 @@ Instrument instruments[MAX_INSTRUMENTS];
 int currentInstrument = 0;
 int loadedInstruments = 0;
 
+const char* instrumentTypeNames[12] = {
+    "Flute", "Horn", "Bassoon", "Organ",
+    "Guitar", "Bass", "Vibraphone", "Marimba",
+    "Rhodes", "Latin Perc", "African Perc", "Drums"
+};
+
+static int selectedInstrumentType = -1;   // Currently selected (may not be loaded yet)
+static bool instrumentIsCurrentlyLoading = false;
+
 float calculatePitchRatio(float semitoneOffset) {
     // Calculate pitch ratio using 12-tone equal temperament
     // Each semitone is 2^(1/12) ratio
@@ -335,4 +344,26 @@ void loadInstrumentForType(int typePosition) {
     }
 
     selectInstrument(0);
+}
+
+int getSelectedInstrumentType() {
+    return selectedInstrumentType;
+}
+
+bool isInstrumentLoading() {
+    return instrumentIsCurrentlyLoading;
+}
+
+const char* getInstrumentTypeName(int typeIndex) {
+    if (typeIndex >= 0 && typeIndex < 12) {
+        return instrumentTypeNames[typeIndex];
+    }
+    return "None";
+}
+
+void selectInstrumentType(int typePosition) {
+    selectedInstrumentType = typePosition;
+    instrumentIsCurrentlyLoading = true;
+    loadInstrumentForType(typePosition);
+    instrumentIsCurrentlyLoading = false;
 }

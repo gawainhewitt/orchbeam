@@ -37,3 +37,10 @@ void loadBasicDrumKit();
 void unloadCurrentInstrument();
 
 void loadInstrumentForType(int typePosition);
+
+// Instrument type selection state (driven by the UI - currently static defaults)
+extern const char* instrumentTypeNames[12];
+int getSelectedInstrumentType();
+bool isInstrumentLoading();
+const char* getInstrumentTypeName(int typeIndex);
+void selectInstrumentType(int typePosition);

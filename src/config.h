@@ -3,13 +3,6 @@
 // Debug configuration
 #define DEBUG_ON
 
-// range pots
-
-#define MIN_DISTANCE_PIN 8
-#define MAX_DISTANCE_PIN 4
-#define VOLUME_PIN 1
-#define BALANCE_PIN 2
-
 // Audio configuration
 #define SAMPLE_RATE           44100
 #define MAX_POLYPHONY         8
@@ -28,12 +21,6 @@
 #define SDMMC_D1    14
 #define SDMMC_D2    9
 #define SDMMC_D3    10
-
-// Shift Register Pins (SN74HC165N)
-
-#define SHIFT_LOAD_PIN  38
-#define SHIFT_CLOCK_PIN 39
-#define SHIFT_DATA_PIN  40
 
 // VL53L1X Time-of-Flight sensor (I2C)
 #define VL53L1X_SDA_PIN  15  // Purple wire

@@ -3,7 +3,6 @@
 #include "../config.h"
 #include "../storage/instrument_manager.h"
 #include "../midi/midi.h"
-#include "../switches/switches.h"
 #include "../debug.h"
 
 // Define the u8g2 object (note: _F_ means full buffer mode)
