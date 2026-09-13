@@ -33,6 +33,11 @@
 #define DISP_DC_PIN     42
 #define DISP_RST_PIN    41
 
+// Rotary encoder with push button (CLK, DT, SW)
+#define ENC_CLK_PIN  38
+#define ENC_DT_PIN   39
+#define ENC_SW_PIN   40
+
 // Audio settings
 #define DMA_BUF_LEN     256
 #define DMA_NUM_BUF     8

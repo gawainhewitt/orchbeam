@@ -4,6 +4,7 @@
 #include "./screen/oled.h"
 #include "./audio/audio_engine.h"
 #include "./audio/i2s_manager.h"
+#include "./encoder/encoder.h"
 #include "./storage/sd_manager.h"
 #include "./storage/instrument_manager.h"
 #include "config.h"
@@ -41,6 +42,7 @@ void setup() {
     setupVL53L1X();
     setupOLED();
     setupMIDI();
+    initEncoder();
 
     // Static defaults - the physical UI (shift-register switches + pots) has
     // been removed. These values will be driven by the pushbutton encoder UI
@@ -84,6 +86,20 @@ void loop() {
         drawOLED(scaleNames[currentScaleIndex], keyNames[currentKeyIndex], numberOfNotes,
                rangeMinimum/10, rangeMaximum/10);
         lastUpdate = millis();
+    }
+
+    // TEMP: log encoder activity so the hardware can be verified before the
+    // menu UI is built. Uses Serial directly (not DEBUGF) to avoid the slow
+    // SD-card flush on every message. Remove once the UI is wired up.
+    static unsigned long lastEncoderLog = 0;
+    if (millis() - lastEncoderLog > 200) {
+        int rotation = encoderGetRotation();
+        if (rotation != 0 || encoderButtonPressed()) {
+            Serial.printf("Encoder: rotation=%d button=%d\n", rotation, encoderButtonPressed() ? 1 : 0);
+            encoderResetRotation();
+            encoderClearButton();
+        }
+        lastEncoderLog = millis();
     }
 
     delay(1);
