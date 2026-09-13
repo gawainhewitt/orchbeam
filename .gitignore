@@ -1,0 +1,11 @@
+# Apple OS
+.DS_Store
+
+# PlatformIO
+.pio/
+.cache/
+compile_commands.json
+
+# Editor
+.zed/
+.vscode/
